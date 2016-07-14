@@ -1,15 +1,19 @@
 # HydroponicBean
 
-Welcome to your new gem! In this directory, you'll find the files you need to be able to package up your Ruby library into a gem. Put your Ruby code in the file `lib/hydroponic_bean`. To experiment with that code, run `bin/console` for an interactive prompt.
+This gem aims to provide a mock for the [beaneater](https://github.com/beanstalkd/beaneater) connection,
+used to access a [beanstalkd](https://github.com/kr/beanstalkd)
+instance, either directly or through [backburner](https://github.com/nesquena/backburner).
 
-TODO: Delete this and the text above, and describe your gem
+At the moment, the focus is made only on the producer commands, although it should be
+easy enough (though maybe not as useful) to mock worker commands to, followings the
+[protocol documentation](https://github.com/kr/beanstalkd/blob/master/doc/protocol.txt)
 
 ## Installation
 
 Add this line to your application's Gemfile:
 
 ```ruby
-gem 'hydroponic_bean'
+gem 'hydroponic_bean', group: :test
 ```
 
 And then execute:
@@ -22,7 +26,9 @@ Or install it yourself as:
 
 ## Usage
 
-TODO: Write usage instructions here
+Simply call `Beaneater.hydroponic!` to make it use this mocked collection.
+
+You can include `HydroponicBean::TestHelper` which provides `assert_job_put(count = 1) do ... end` for you tests.
 
 ## Development
 
