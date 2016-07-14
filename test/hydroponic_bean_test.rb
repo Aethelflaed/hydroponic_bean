@@ -1,11 +1,21 @@
 require 'test_helper'
 
 class HydroponicBeanTest < Minitest::Test
-  def test_that_it_has_a_version_number
-    refute_nil ::HydroponicBean::VERSION
+  include HydroponicBean
+
+  def test_hydroponic!
+    Beaneater.hydroponic!
+    assert Beaneater::Connection < HydroponicBean, "Beaneater::Connection should be an HydroponicBean"
   end
 
-  def test_it_does_something_useful
-    assert false
+  def address
+    @address ||= ['localhost:900']
+  end
+  def test_establish_connection
+    establish_connection
+    assert_equal 'localhost', @host
+    assert_equal 900, @port
+
+    assert_kind_of HydroponicBean::Connection, @connection
   end
 end
