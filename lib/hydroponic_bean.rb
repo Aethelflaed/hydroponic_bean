@@ -3,6 +3,7 @@ require 'beaneater'
 require 'hydroponic_bean/version'
 require 'hydroponic_bean/data'
 require 'hydroponic_bean/connection'
+require 'hydroponic_bean/test_helper'
 
 module HydroponicBean
   def establish_connection
