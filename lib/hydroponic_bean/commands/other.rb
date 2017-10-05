@@ -19,6 +19,19 @@ module HydroponicBean
         peek_output current_tube.delayed_jobs.first
       end
 
+      def stats_job(stream, id)
+        id = id.to_i
+        job = (id == 0) ? nil : HydroponicBean.jobs[id - 1]
+        if !job
+          output(Protocol::NOT_FOUND)
+          return false
+        end
+
+        stats = job.serialize_stats.to_yaml
+        output("OK #{stats.length}\r\n")
+        output("#{stats}\r\n")
+      end
+
       def watch(stream, tube_name)
         watched_tube_names << tube_name
         watched_tube_names.uniq!

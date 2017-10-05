@@ -5,7 +5,7 @@ module HydroponicBean
     end
 
     attr_accessor :id, :pri, :delay, :ttr, :data, :created_at,
-      :state, :tube
+      :state, :tube, :stats
 
     attr_reader :deleted
 
@@ -19,6 +19,13 @@ module HydroponicBean
       @state = @delay > 0 ? State.delayed : State.ready
       @data = data
       @deleted = false
+      @stats = {
+        'reserves' => 0,
+        'timeouts' => 0,
+        'releases' => 0,
+        'buries' => 0,
+        'kicks' => 0,
+      }
 
       @tube.push(self)
     end
@@ -47,8 +54,27 @@ module HydroponicBean
 
     def kick
       if buried? || delayed?
+        stats['kicks'] += 1
         @state = State.ready
       end
+    end
+
+    def time_left
+      reserved? ? ttr : [delay - age, 0].max
+    end
+
+    def serialize_stats
+      {
+        'id' => id,
+        'tube' => tube.name,
+        'state' => state.to_s,
+        'pri' => pri,
+        'age' => age,
+        'delay' => delay,
+        'ttr' => ttr,
+        'time-left' => time_left,
+        'file' => 0,
+      }.merge(stats)
     end
 
     module State
