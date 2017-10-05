@@ -38,8 +38,19 @@ module HydroponicBean
           output("#{data}\r\n")
         else
           output(Protocol::NOT_FOUND)
+          return false
         end
-        return false
+      end
+
+      def pause_tube(stream, tube_name, delay)
+        if HydroponicBean.tubes.has_key?(tube_name)
+          tube = HydroponicBean.tubes[tube_name]
+          tube.pause(delay)
+          output("PAUSED\r\n")
+        else
+          output(Protocol::NOT_FOUND)
+          return false
+        end
       end
     end
   end

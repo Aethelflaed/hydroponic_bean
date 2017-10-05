@@ -39,6 +39,13 @@ module HydroponicBean
       }.merge(stats)
     end
 
+    def pause(delay)
+      delay = delay.to_i
+      stats['pause'] = delay
+      stats['pause-time-left'] = delay
+      stats['cmd-pause-tube'] += 1
+    end
+
     def job_deleted
       stats['cmd-delete'] += 1
     end

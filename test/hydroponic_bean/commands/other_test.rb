@@ -58,4 +58,16 @@ class HydroponicBean::Commands::OtherTest < Minitest::Test
     data  = tube.serialize_stats.to_yaml
     assert_equal "OK #{data.length}\r\n", @connection.readline
   end
+
+  def test_pause_tube_not_found
+    @connection.write("pause-tube X 10\r\n")
+    assert_equal HydroponicBean::Protocol::NOT_FOUND, @connection.readline
+  end
+
+  def test_pause_tube
+    tube = HydroponicBean.tubes['default']
+    @connection.write("pause-tube default 10\r\n")
+    assert_equal "PAUSED\r\n", @connection.readline
+    assert_equal 1, tube.stats['cmd-pause-tube']
+  end
 end
