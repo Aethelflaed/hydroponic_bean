@@ -46,6 +46,24 @@ module HydroponicBean
       stats['cmd-pause-tube'] += 1
     end
 
+    def buried_jobs;  jobs.select(&:buried?);   end
+    def delayed_jobs; jobs.select(&:delayed?);  end
+    def kick(bound)
+      initial_bound = bound
+      while bound > 0
+        if buried_jobs.count > 0
+          buried_jobs.first.kick
+          bound -= 1
+        elsif delayed_jobs.count > 0
+          delayed_jobs.first.kick
+          bound -= 1
+        else
+          return initial_bound - bound
+        end
+      end
+      return initial_bound
+    end
+
     def job_deleted
       stats['cmd-delete'] += 1
     end

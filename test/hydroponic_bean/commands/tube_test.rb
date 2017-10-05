@@ -52,4 +52,31 @@ class HydroponicBean::Commands::Test < Minitest::Test
     assert_equal "PAUSED\r\n", @connection.readline
     assert_equal 1, tube.stats['cmd-pause-tube']
   end
+
+  def test_kick
+    tube = @connection.current_tube
+    @connection.write("kick 10\r\n")
+    assert_equal "KICKED 0\r\n", @connection.readline
+
+    id1 = @connection.create_job(1024, 0, 0, 'hello world')
+    id2 = @connection.create_job(1024, 0, 0, 'hello world')
+    id3 = @connection.create_job(1024, 0, 0, 'hello world')
+    id4 = @connection.create_job(1024, 0, 0, 'hello world')
+    job1 = HydroponicBean.jobs[id1 - 1]
+    job2 = HydroponicBean.jobs[id2 - 1]
+    job3 = HydroponicBean.jobs[id3 - 1]
+    job4 = HydroponicBean.jobs[id4 - 1]
+    job1.state = HydroponicBean::Job::State.delayed
+    job2.state = HydroponicBean::Job::State.delayed
+    job3.state = HydroponicBean::Job::State.buried
+    job4.state = HydroponicBean::Job::State.buried
+
+    @connection.write("kick 1\r\n")
+    assert_equal "KICKED 1\r\n", @connection.readline
+    @connection.write("kick 1\r\n")
+    assert_equal "KICKED 1\r\n", @connection.readline
+    assert tube.buried_jobs.empty?
+    @connection.write("kick 3\r\n")
+    assert_equal "KICKED 2\r\n", @connection.readline
+  end
 end

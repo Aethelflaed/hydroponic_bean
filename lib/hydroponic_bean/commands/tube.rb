@@ -40,6 +40,12 @@ module HydroponicBean
           return false
         end
       end
+
+      def kick(stream, bound)
+        bound = bound.to_i
+        tube = current_tube
+        output("KICKED #{tube.kick(bound)}\r\n")
+      end
     end
   end
 end

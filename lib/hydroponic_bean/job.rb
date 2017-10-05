@@ -37,11 +37,17 @@ module HydroponicBean
     def delayed?;  exists? && state == State.delayed; end
     def buried?;   exists? && state == State.buried; end
 
-    def exists?; !deleted; end
     def delete
       if @deleted == false
         @tube.job_deleted
         @deleted = true
+      end
+    end
+    def exists?; !deleted; end
+
+    def kick
+      if buried? || delayed?
+        @state = State.ready
       end
     end
 
