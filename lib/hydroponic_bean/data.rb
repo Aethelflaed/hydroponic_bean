@@ -1,6 +1,21 @@
 module HydroponicBean
+  class Tube
+    attr_reader :name, :jobs, :stats
+
+    def initialize(name)
+      @name = name
+      @jobs = []
+      @stats = OpenStruct.new
+    end
+
+    def push(job)
+      @jobs.push(job)
+      self
+    end
+  end
+
   def self.tubes
-    @tubes ||= Hash.new{|h, k| h[k] = []}
+    @tubes ||= Hash.new{|h, k| h[k] = Tube.new(k)}
   end
 
   def self.jobs

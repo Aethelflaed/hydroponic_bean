@@ -6,7 +6,7 @@ class HydroponicBean::DataTest < Minitest::Test
   def test_tubes
     assert_kind_of Hash, HydroponicBean.tubes
 
-    assert_kind_of Array, HydroponicBean.tubes[Time.now]
+    assert_kind_of HydroponicBean::Tube, HydroponicBean.tubes[Time.now]
 
   ensure
     HydroponicBean.tubes.clear
@@ -20,7 +20,7 @@ class HydroponicBean::DataTest < Minitest::Test
   end
 
   def test_current_tube
-    assert_kind_of Array, current_tube
+    assert_kind_of HydroponicBean::Tube, current_tube
   end
 
   def test_jobs
