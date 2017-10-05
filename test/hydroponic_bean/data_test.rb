@@ -28,9 +28,9 @@ class HydroponicBean::DataTest < Minitest::Test
   end
 
   def test_next_id
-    id = next_id
+    id = HydroponicBean::Job.next_id
     HydroponicBean.jobs.push(1)
-    assert_equal id + 1, next_id
+    assert_equal id + 1, HydroponicBean::Job.next_id
 
   ensure
     HydroponicBean.jobs.clear
@@ -45,7 +45,7 @@ class HydroponicBean::DataTest < Minitest::Test
     assert_equal count + 1, HydroponicBean.jobs.count
 
     job = HydroponicBean.jobs[id - 1]
-    assert_equal current_tube_name, job[:tube]
+    assert_equal current_tube_name, job.tube_name
 
   ensure
     HydroponicBean.tubes.clear
