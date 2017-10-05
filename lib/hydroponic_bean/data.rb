@@ -19,6 +19,10 @@ module HydroponicBean
       HydroponicBean.tubes[current_tube_name]
     end
 
+    def watched_tube_names
+      @watched_tube_names ||= ['default']
+    end
+
     def create_job(pri, delay, ttr, data)
       job = Job.new(current_tube, pri, delay, ttr, data)
 

@@ -24,4 +24,27 @@ class HydroponicBean::Commands::OtherTest < Minitest::Test
     @connection.write("peek \r\n")
     assert_equal HydroponicBean::Protocol::NOT_FOUND, @connection.readline
   end
+
+  def test_watch
+    @connection.write("watch test\r\n")
+    assert_equal "WATCHING 2\r\n", @connection.readline
+
+    @connection.write("watch test\r\n")
+    assert_equal "WATCHING 2\r\n", @connection.readline
+
+    @connection.write("watch default\r\n")
+    assert_equal "WATCHING 2\r\n", @connection.readline
+  end
+
+  def test_ignore
+    @connection.watched_tube_names << 'hello'
+    first, *rest = @connection.watched_tube_names.dup
+    rest.each do |tube|
+      @connection.write("ignore #{tube}\r\n")
+      assert_equal "WATCHING #{rest.count}\r\n", @connection.readline
+    end
+
+    @connection.write("ignore #{first}\r\n")
+    assert_equal "NOT_IGNORED\r\n", @connection.readline
+  end
 end
