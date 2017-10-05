@@ -1,8 +1,12 @@
 module HydroponicBean
   module Commands
     module Other
-      def peek(stream, id)
-        peek_output(HydroponicBean.jobs[id.to_i - 1])
+      def peek(stream, id = nil)
+        if id.nil?
+          peek_output(nil)
+        else
+          peek_output(HydroponicBean.jobs[id.to_i - 1])
+        end
       end
 
       def list_tubes(stream)

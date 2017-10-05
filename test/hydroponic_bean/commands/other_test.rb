@@ -23,6 +23,11 @@ class HydroponicBean::Commands::OtherTest < Minitest::Test
     assert_equal "hello world\r\n", @connection.readline
   end
 
+  def test_peek_no_id
+    @connection.write("peek \r\n")
+    assert_equal HydroponicBean::Protocol::NOT_FOUND, @connection.readline
+  end
+
   def test_list_tubes
     HydroponicBean.tubes['default']
     HydroponicBean.tubes['test']
