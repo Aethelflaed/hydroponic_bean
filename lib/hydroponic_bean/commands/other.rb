@@ -9,6 +9,17 @@ module HydroponicBean
         end
       end
 
+      def delete(stream, id)
+        job = HydroponicBean.jobs[id.to_i - 1]
+        if job
+          job[:deleted] = true
+          output("DELETED\r\n")
+        else
+          output(Protocol::NOT_FOUND)
+          return false
+        end
+      end
+
       def list_tubes(stream)
         tubes = HydroponicBean.tubes.keys.to_yaml
         output("OK #{tubes.length}\r\n")

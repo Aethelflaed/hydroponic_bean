@@ -28,6 +28,21 @@ class HydroponicBean::Commands::OtherTest < Minitest::Test
     assert_equal HydroponicBean::Protocol::NOT_FOUND, @connection.readline
   end
 
+  def test_delete_not_found
+    @connection.write("delete 1\r\n")
+    assert_equal HydroponicBean::Protocol::NOT_FOUND, @connection.readline
+  end
+
+  def test_delete
+    job = {
+      id: 1, data: 'hello world'
+    }
+    HydroponicBean.jobs.push(job)
+
+    @connection.write("delete 1\r\n")
+    assert_equal "DELETED\r\n", @connection.readline
+  end
+
   def test_list_tubes
     HydroponicBean.tubes['default']
     HydroponicBean.tubes['test']
