@@ -3,14 +3,20 @@ module HydroponicBean
     module Other
       def peek(stream, id = nil)
         id = id.to_i
-        job = HydroponicBean.jobs[id - 1]
-        if id == 0 || !job
-          output(Protocol::NOT_FOUND)
-          return false
-        else
-          output("FOUND #{job.id} #{job.data.length}\r\n")
-          output("#{job.data}\r\n")
-        end
+        job = (id == 0) ? nil : HydroponicBean.jobs[id - 1]
+        peek_output(job)
+      end
+
+      def peek_ready(stream)
+        peek_output current_tube.ready_jobs.first
+      end
+
+      def peek_buried(stream)
+        peek_output current_tube.buried_jobs.first
+      end
+
+      def peek_delayed(stream)
+        peek_output current_tube.delayed_jobs.first
       end
 
       def watch(stream, tube_name)
@@ -26,6 +32,17 @@ module HydroponicBean
           output("NOT_IGNORED\r\n")
         else
           output("WATCHING #{watched_tube_names.count}\r\n")
+        end
+      end
+
+      protected
+      def peek_output(job)
+        if job
+          output("FOUND #{job.id} #{job.data.length}\r\n")
+          output("#{job.data}\r\n")
+        else
+          output(Protocol::NOT_FOUND)
+          return false
         end
       end
     end
