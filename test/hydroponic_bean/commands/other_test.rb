@@ -64,6 +64,20 @@ class HydroponicBean::Commands::OtherTest < Minitest::Test
     assert_equal "OK #{data.length}\r\n", @connection.readline
   end
 
+  def test_kick_job
+    @connection.write("kick-job 0\r\n")
+    assert_equal HydroponicBean::Protocol::NOT_FOUND, @connection.readline
+
+    @connection.create_job(1024, 0, 0, 'hello world')
+    @connection.write("kick-job 1\r\n")
+    assert_equal HydroponicBean::Protocol::NOT_FOUND, @connection.readline
+
+    job = HydroponicBean.jobs[0]
+    job.state = HydroponicBean::Job::State.buried
+    @connection.write("kick-job 1\r\n")
+    assert_equal "KICKED\r\n", @connection.readline
+  end
+
   def test_watch
     @connection.write("watch test\r\n")
     assert_equal "WATCHING 2\r\n", @connection.readline

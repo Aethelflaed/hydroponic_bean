@@ -32,6 +32,17 @@ module HydroponicBean
         output("#{stats}\r\n")
       end
 
+      def kick_job(stream, id)
+        id = id.to_i
+        job = (id == 0) ? nil : HydroponicBean.jobs[id - 1]
+        if !job || !job.kick
+          output(Protocol::NOT_FOUND)
+          return false
+        end
+        job.kick
+        output("KICKED\r\n")
+      end
+
       def watch(stream, tube_name)
         watched_tube_names << tube_name
         watched_tube_names.uniq!
