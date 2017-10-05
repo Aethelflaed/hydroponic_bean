@@ -29,6 +29,12 @@ class HydroponicBean::Commands::Test < Minitest::Test
     assert_equal result, result.count("\n").times.map{@connection.readline}.join
   end
 
+  def test_list_tubes_watched
+    tubes = @connection.watched_tube_names
+    @connection.write("list-tubes-watched\r\n")
+    assert_equal "OK #{tubes.to_yaml.length}\r\n", @connection.readline
+  end
+
   def test_stats_tube_not_found
     @connection.write("stats-tube X\r\n")
     assert_equal HydroponicBean::Protocol::NOT_FOUND, @connection.readline

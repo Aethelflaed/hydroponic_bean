@@ -18,6 +18,12 @@ module HydroponicBean
         output("#{tubes}\r\n")
       end
 
+      def list_tubes_watched(stream)
+        tubes = watched_tube_names.to_yaml
+        output("OK #{tubes.length}\r\n")
+        output("#{tubes}\r\n")
+      end
+
       def stats_tube(stream, tube_name)
         if HydroponicBean.tubes.has_key?(tube_name)
           tube = HydroponicBean.tubes[tube_name]
