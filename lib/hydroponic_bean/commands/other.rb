@@ -2,17 +2,21 @@ module HydroponicBean
   module Commands
     module Other
       def peek(stream, id = nil)
-        if id.nil?
-          peek_output(nil)
+        id = id.to_i
+        job = HydroponicBean.jobs[id - 1]
+        if id == 0 || !job
+          output(Protocol::NOT_FOUND)
+          return false
         else
-          peek_output(HydroponicBean.jobs[id.to_i - 1])
+          output("FOUND #{job.id} #{job.data.length}\r\n")
+          output("#{job.data}\r\n")
         end
       end
 
       def delete(stream, id)
         job = HydroponicBean.jobs[id.to_i - 1]
         if job
-          job[:deleted] = true
+          job.delete
           output("DELETED\r\n")
         else
           output(Protocol::NOT_FOUND)
@@ -26,15 +30,16 @@ module HydroponicBean
         output("#{tubes}\r\n")
       end
 
-      protected
-      def peek_output(job)
-        if job
-          output("FOUND #{job[:id]} #{job[:data].length}\r\n")
-          output("#{job[:data]}\r\n")
+      def stats_tube(stream, tube_name)
+        if HydroponicBean.tubes.has_key?(tube_name)
+          tube = HydroponicBean.tubes[tube_name]
+          data = tube.serialize_stats.to_yaml
+          output("OK #{data.length}\r\n")
+          output("#{data}\r\n")
         else
           output(Protocol::NOT_FOUND)
-          return false
         end
+        return false
       end
     end
   end

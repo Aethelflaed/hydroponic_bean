@@ -13,10 +13,7 @@ class HydroponicBean::Commands::OtherTest < Minitest::Test
   end
 
   def test_peek
-    job = {
-      id: 1, data: 'hello world'
-    }
-    HydroponicBean.jobs.push(job)
+    @connection.create_job(1024, 0, 0, 'hello world')
 
     @connection.write("peek 1\r\n")
     assert_equal "FOUND 1 11\r\n", @connection.readline
@@ -34,12 +31,9 @@ class HydroponicBean::Commands::OtherTest < Minitest::Test
   end
 
   def test_delete
-    job = {
-      id: 1, data: 'hello world'
-    }
-    HydroponicBean.jobs.push(job)
+    id = @connection.create_job(1024, 0, 0, 'hello world')
 
-    @connection.write("delete 1\r\n")
+    @connection.write("delete #{id}\r\n")
     assert_equal "DELETED\r\n", @connection.readline
   end
 
@@ -51,5 +45,17 @@ class HydroponicBean::Commands::OtherTest < Minitest::Test
     result = "#{tubes}\r\n"
     assert_equal "OK 21\r\n", @connection.readline
     assert_equal result, result.count("\n").times.map{@connection.readline}.join
+  end
+
+  def test_stats_tube_not_found
+    @connection.write("stats-tube X\r\n")
+    assert_equal HydroponicBean::Protocol::NOT_FOUND, @connection.readline
+  end
+
+  def test_stats_tube
+    tube = HydroponicBean.tubes['default']
+    @connection.write("stats-tube default\r\n")
+    data  = tube.serialize_stats.to_yaml
+    assert_equal "OK #{data.length}\r\n", @connection.readline
   end
 end
