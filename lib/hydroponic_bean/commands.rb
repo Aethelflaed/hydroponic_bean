@@ -16,7 +16,7 @@ module HydroponicBean
     # or the job is not found
     def for_job(id)
       job = HydroponicBean.find_job(id)
-      if !job || !yield(id)
+      if !job || !yield(job)
         output(Protocol::NOT_FOUND)
         return false
       end
