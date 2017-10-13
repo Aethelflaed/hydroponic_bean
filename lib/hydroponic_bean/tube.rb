@@ -58,7 +58,7 @@ module HydroponicBean
 
     def ready_jobs;   jobs.select(&:ready?);    end
     def buried_jobs;  jobs.select(&:buried?);   end
-    def delayed_jobs; jobs.select(&:delayed?).sort_by(&:delay);  end
+    def delayed_jobs; jobs.select(&:delayed?).sort_by(&:time_left);  end
 
     def kick(bound)
       initial_bound = bound
