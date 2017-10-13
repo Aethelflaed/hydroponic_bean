@@ -6,6 +6,7 @@ module HydroponicBean
 
     def initialize
       @_read, @_write = IO.pipe
+      HydroponicBean.add_connection(self)
     end
 
     # Necessary interface used by beaneater
@@ -24,6 +25,7 @@ module HydroponicBean
     def close
       @_read.close
       @_write.close
+      HydroponicBean.remove_connection(self)
     end
 
     protected

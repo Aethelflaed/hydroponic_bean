@@ -10,6 +10,18 @@ module HydroponicBean
     @jobs ||= []
   end
 
+  def self.connections
+    @connections ||= []
+  end
+
+  def self.add_connection(connection)
+    connections.push(connection)
+  end
+
+  def self.remove_connection(connection)
+    connections.delete(connection)
+  end
+
   module Data
     def current_tube_name
       @current_tube_name ||= 'default'
