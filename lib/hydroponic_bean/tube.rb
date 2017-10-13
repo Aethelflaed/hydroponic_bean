@@ -24,6 +24,16 @@ module HydroponicBean
     def current_jobs_delayed;   jobs.select(&:delayed?).count; end
     def current_jobs_buried;    jobs.select(&:buried?).count; end
 
+    def current_using
+      HydroponicBean.connections.select{|c| c.current_tube_name == name}.count
+    end
+
+    def current_watching
+      HydroponicBean.connections.select do |c|
+        c.watched_tube_names.include?(name)
+      end.count
+    end
+
     def serialize_stats
       {
         'name' => name,
@@ -33,9 +43,9 @@ module HydroponicBean
         'current-jobs-delayed'  => current_jobs_delayed,
         'current-jobs-buried'   => current_jobs_buried,
         'total-jobs' => jobs.count,
-        'current-using' => 0,
+        'current-using' => current_using,
         'current-waiting' => 0,
-        'current-watching' => 0,
+        'current-watching' => current_watching,
       }.merge(stats)
     end
 
