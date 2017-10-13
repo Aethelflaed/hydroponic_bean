@@ -5,12 +5,16 @@ module HydroponicBean
     def initialize(name)
       @name = name
       @jobs = []
+      @paused_at = nil
       @stats = {
         'cmd-delete' => 0,
         'cmd-pause-tube' => 0,
         'pause' => 0,
-        'pause-time-left' => 0,
       }
+    end
+
+    def update_time!
+      pause_time_left
     end
 
     def push(job)
@@ -46,13 +50,13 @@ module HydroponicBean
         'current-using' => current_using,
         'current-waiting' => 0,
         'current-watching' => current_watching,
+        'pause-time-left' => pause_time_left,
       }.merge(stats)
     end
 
     def pause(delay)
       delay = delay.to_i
       stats['pause'] = delay
-      stats['pause-time-left'] = delay
       stats['cmd-pause-tube'] += 1
     end
 
@@ -76,7 +80,23 @@ module HydroponicBean
       return initial_bound
     end
 
-    def job_deleted
+    def paused?
+      !!@paused_at
+    end
+
+    def pause_time_left
+      if paused?
+        time_left = [stats['pause'] - (Time.now.utc - @paused_at).to_i, 0].max
+        if time_left == 0
+          stats['pause'] = 0
+        end
+        return time_left
+      else
+        return 0
+      end
+    end
+
+    def job_deleted!
       stats['cmd-delete'] += 1
     end
   end
