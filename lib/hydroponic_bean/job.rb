@@ -5,9 +5,7 @@ module HydroponicBean
     end
 
     attr_accessor :id, :pri, :delay, :ttr, :data, :created_at,
-      :state, :tube, :stats
-
-    attr_reader :deleted
+      :reserved_at, :state, :tube, :stats
 
     def initialize(tube, pri, delay, ttr, data)
       @id = self.class.next_id
@@ -15,6 +13,7 @@ module HydroponicBean
       @tube = tube
       @pri = pri.to_i
       @delay = delay.to_i
+      @reserved_at = nil
       @ttr = ttr.to_i
       @state = @delay > 0 ? State.delayed : State.ready
       @data = data
@@ -28,6 +27,15 @@ module HydroponicBean
       }
 
       @tube.push(self)
+    end
+
+    def update_time!
+      if time_left == 0 && (delayed? || reserved?)
+        if reserved?
+          stats['timeouts'] += 1
+        end
+        @state = State.ready
+      end
     end
 
     def age
@@ -44,13 +52,29 @@ module HydroponicBean
     def delayed?;  exists? && state == State.delayed; end
     def buried?;   exists? && state == State.buried; end
 
+    def reserve
+      if ready?
+        stats['reserves'] += 1
+        @reserved_at = Time.now.utc
+      end
+    end
+
+    def release(pri, delay)
+      if reserved?
+        stats['releases'] += 1
+        @pri = pri.to_i
+        @delay = delay.to_i
+        @reserved_at = nil
+        @state = @delay > 0 ? State.delayed : State.ready
+      end
+    end
+
     def delete
       if @deleted == false
-        @tube.job_deleted
+        @tube.job_deleted!
         @deleted = true
       end
     end
-    def exists?; !deleted; end
 
     def kick
       if buried? || delayed?
@@ -59,8 +83,12 @@ module HydroponicBean
       end
     end
 
+    def ttr_left
+      [ttr - (Time.now.utc - reserved_at).to_i, 0].max
+    end
+
     def time_left
-      reserved? ? ttr : [delay - age, 0].max
+      reserved? ? ttr_left : [delay - age, 0].max
     end
 
     def serialize_stats
@@ -76,6 +104,9 @@ module HydroponicBean
         'file' => 0,
       }.merge(stats)
     end
+
+    def deleted?; @deleted; end
+    def exists?; !@deleted; end
 
     module State
       def self.ready;     :ready;    end
