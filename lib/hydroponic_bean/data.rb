@@ -6,6 +6,17 @@ module HydroponicBean
     @tubes ||= Hash.new{|h, k| h[k] = Tube.new(k)}
   end
 
+  def self.find_job(id)
+    id = id.to_i
+    if id == 0
+      return nil
+    else
+      job = jobs[id - 1]
+      job.update_time!
+      return job
+    end
+  end
+
   def self.jobs
     @jobs ||= []
   end
