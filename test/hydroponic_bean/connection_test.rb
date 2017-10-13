@@ -1,6 +1,6 @@
 require 'test_helper'
 
-class HydroponicBean::ConnectionTest < Minitest::Test
+class HydroponicBean::ConnectionTest < TestCase
   def before_setup
     @connection = HydroponicBean::Connection.new
     @write = @connection.instance_variable_get('@_write')

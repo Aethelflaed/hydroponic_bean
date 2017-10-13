@@ -1,6 +1,6 @@
 require 'test_helper'
 
-class HydroponicBean::Commands::ProducerTest < Minitest::Test
+class HydroponicBean::Commands::ProducerTest < TestCase
   def before_setup
     @connection = HydroponicBean::Connection.new
   end

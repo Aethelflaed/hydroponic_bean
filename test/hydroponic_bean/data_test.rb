@@ -1,15 +1,12 @@
 require 'test_helper'
 
-class HydroponicBean::DataTest < Minitest::Test
+class HydroponicBean::DataTest < TestCase
   include HydroponicBean::Data
 
   def test_tubes
     assert_kind_of Hash, HydroponicBean.tubes
 
     assert_kind_of HydroponicBean::Tube, HydroponicBean.tubes[Time.now]
-
-  ensure
-    HydroponicBean.tubes.clear
   end
 
   def test_current_tube_name
@@ -31,9 +28,6 @@ class HydroponicBean::DataTest < Minitest::Test
     id = HydroponicBean::Job.next_id
     HydroponicBean.jobs.push(1)
     assert_equal id + 1, HydroponicBean::Job.next_id
-
-  ensure
-    HydroponicBean.jobs.clear
   end
 
   def test_create_job
@@ -45,9 +39,5 @@ class HydroponicBean::DataTest < Minitest::Test
     assert_equal count + 1, HydroponicBean.jobs.count
 
     assert_equal current_tube_name, job.tube_name
-
-  ensure
-    HydroponicBean.tubes.clear
-    HydroponicBean.jobs.clear
   end
 end

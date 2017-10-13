@@ -1,12 +1,10 @@
 require 'test_helper'
 
-class HydroponicBean::TestHelperTest < Minitest::Test
+class HydroponicBean::TestHelperTest < TestCase
   include HydroponicBean::TestHelper
 
   def before_setup
     @connection = HydroponicBean::Connection.new
-    HydroponicBean.jobs.clear
-    HydroponicBean.tubes.clear
   end
 
   def test_assert_job_put

@@ -1,6 +1,6 @@
 require 'test_helper'
 
-class HydroponicBeanTest < Minitest::Test
+class HydroponicBeanTest < TestCase
   include HydroponicBean
 
   def test_hydroponic!

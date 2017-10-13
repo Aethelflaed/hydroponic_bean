@@ -1,10 +1,8 @@
 require 'test_helper'
 
-class HydroponicBean::Commands::WorkerTest < Minitest::Test
+class HydroponicBean::Commands::WorkerTest < TestCase
   def before_setup
     @connection = HydroponicBean::Connection.new
-    HydroponicBean.jobs.clear
-    HydroponicBean.tubes.clear
   end
 
   def test_delete_not_found

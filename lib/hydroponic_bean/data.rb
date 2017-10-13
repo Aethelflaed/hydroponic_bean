@@ -2,6 +2,13 @@ require 'hydroponic_bean/tube'
 require 'hydroponic_bean/job'
 
 module HydroponicBean
+  def self.clear
+    tubes.clear
+    jobs.clear
+    connections.clear
+    commands.clear
+  end
+
   def self.tubes
     @tubes ||= Hash.new{|h, k| h[k] = Tube.new(k)}
   end
