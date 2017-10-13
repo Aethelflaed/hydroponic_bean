@@ -9,5 +9,16 @@ module HydroponicBean
     include HydroponicBean::Commands::Worker
     include HydroponicBean::Commands::Tube
     include HydroponicBean::Commands::Other
+
+    # Find a job by id and yield it
+    #
+    # Outputs Protocol::NOT_FOUND if the block returns false
+    def for_job(id)
+      job = HydroponicBean.find_job(id)
+      if !yield(id)
+        output(Protocol::NOT_FOUND)
+        return false
+      end
+    end
   end
 end
