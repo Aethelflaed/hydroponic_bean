@@ -81,19 +81,25 @@ module HydroponicBean
     end
 
     def paused?
-      !!@paused_at
+      if !@paused_at || _pause_time_left == 0
+        stats['pause'] = 0
+        @paused_at = nil
+        return false
+      else
+        return true
+      end
     end
 
     def pause_time_left
       if paused?
-        time_left = [stats['pause'] - (Time.now.utc - @paused_at).to_i, 0].max
-        if time_left == 0
-          stats['pause'] = 0
-        end
-        return time_left
+        return _pause_time_left
       else
         return 0
       end
+    end
+
+    def _pause_time_left
+      [stats['pause'] - (Time.now.utc - @paused_at).to_i, 0].max
     end
 
     def job_deleted!
