@@ -37,6 +37,7 @@ module HydroponicBean
       end
 
       def kick(stream, bound)
+        HydroponicBean.update_time!
         bound = bound.to_i
         tube = current_tube
         output("KICKED #{tube.kick(bound)}\r\n")
