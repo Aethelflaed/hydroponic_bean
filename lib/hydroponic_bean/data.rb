@@ -12,7 +12,7 @@ module HydroponicBean
       return nil
     else
       job = jobs[id - 1]
-      job.update_time!
+      job&.update_time!
       return job
     end
   end
