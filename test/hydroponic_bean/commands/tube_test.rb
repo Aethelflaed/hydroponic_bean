@@ -52,16 +52,10 @@ class HydroponicBean::Commands::TubeTest < Minitest::Test
     @connection.write("kick 10\r\n")
     assert_equal "KICKED 0\r\n", @connection.readline
 
-    id1 = @connection.create_job(1024, 0, 0, 'hello world')
-    id2 = @connection.create_job(1024, 0, 0, 'hello world')
-    id3 = @connection.create_job(1024, 0, 0, 'hello world')
-    id4 = @connection.create_job(1024, 0, 0, 'hello world')
-    job1 = HydroponicBean.jobs[id1 - 1]
-    job2 = HydroponicBean.jobs[id2 - 1]
-    job3 = HydroponicBean.jobs[id3 - 1]
-    job4 = HydroponicBean.jobs[id4 - 1]
-    job1.state = HydroponicBean::Job::State.delayed
-    job2.state = HydroponicBean::Job::State.delayed
+    @connection.create_job(1024, 10, 0, 'hello world')
+    @connection.create_job(1024, 10, 0, 'hello world')
+    job3 = @connection.create_job(1024, 0, 0, 'hello world')
+    job4 = @connection.create_job(1024, 0, 0, 'hello world')
     job3.state = HydroponicBean::Job::State.buried
     job4.state = HydroponicBean::Job::State.buried
 

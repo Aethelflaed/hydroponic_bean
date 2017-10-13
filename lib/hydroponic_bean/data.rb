@@ -61,7 +61,7 @@ module HydroponicBean
 
       HydroponicBean.jobs.push(job)
 
-      return job.id
+      return job
     end
   end
 end

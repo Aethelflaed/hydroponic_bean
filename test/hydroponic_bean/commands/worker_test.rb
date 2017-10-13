@@ -13,9 +13,9 @@ class HydroponicBean::Commands::WorkerTest < Minitest::Test
   end
 
   def test_delete
-    id = @connection.create_job(1024, 0, 0, 'hello world')
+    job = @connection.create_job(1024, 0, 0, 'hello world')
 
-    @connection.write("delete #{id}\r\n")
+    @connection.write("delete #{job.id}\r\n")
     assert_equal "DELETED\r\n", @connection.readline
   end
 

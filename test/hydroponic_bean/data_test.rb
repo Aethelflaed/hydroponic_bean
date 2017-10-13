@@ -39,12 +39,11 @@ class HydroponicBean::DataTest < Minitest::Test
   def test_create_job
     count = HydroponicBean.jobs.count
 
-    id = create_job(1, 2, 3, 'abc')
+    job = create_job(1, 2, 3, 'abc')
 
-    assert_equal count + 1, id
+    assert_equal count + 1, job.id
     assert_equal count + 1, HydroponicBean.jobs.count
 
-    job = HydroponicBean.jobs[id - 1]
     assert_equal current_tube_name, job.tube_name
 
   ensure

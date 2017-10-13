@@ -20,8 +20,8 @@ module HydroponicBean
           return false
         end
 
-        id = create_job(pri, delay, ttr, data)
-        output("INSERTED #{id}\r\n")
+        job = create_job(pri, delay, ttr, data)
+        output("INSERTED #{job.id}\r\n")
       end
     end
   end
