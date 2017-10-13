@@ -10,6 +10,10 @@ module HydroponicBean
     @jobs ||= []
   end
 
+  def self.update_time!
+    jobs.each(&:update_time!)
+  end
+
   def self.connections
     @connections ||= []
   end
@@ -33,6 +37,12 @@ module HydroponicBean
 
     def watched_tube_names
       @watched_tube_names ||= ['default']
+    end
+
+    def watched_tubes
+      watched_tube_names.map do |name|
+        HydroponicBean.tubes[name]
+      end
     end
 
     def create_job(pri, delay, ttr, data)

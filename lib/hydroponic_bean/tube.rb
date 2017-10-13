@@ -13,10 +13,6 @@ module HydroponicBean
       }
     end
 
-    def update_time!
-      pause_time_left
-    end
-
     def push(job)
       @jobs.push(job)
       self

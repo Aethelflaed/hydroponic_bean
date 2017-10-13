@@ -30,7 +30,7 @@ module HydroponicBean
     end
 
     def update_time!
-      if time_left == 0 && (delayed? || reserved?)
+      if (delayed? || reserved?) && time_left == 0
         if reserved?
           stats['timeouts'] += 1
         end
