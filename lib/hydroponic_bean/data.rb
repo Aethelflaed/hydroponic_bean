@@ -92,5 +92,28 @@ module HydroponicBean
     def reservable_jobs
       watched_tubes.reject(&:paused?).map(&:ready_jobs).flatten.sort_by(&:created_at).sort_by(&:pri)
     end
+
+    def wait_for_job(timeout)
+      self.waiting = true
+      if timeout >= 0
+        Timeout.timeout(timeout) do
+          _wait_for_job
+        end
+      else
+        _wait_for_job
+      end
+    rescue Timeout::Error
+      return nil
+    ensure
+      self.waiting = false
+    end
+
+    private
+    def _wait_for_job
+      while !(job = reserve_job)
+        sleep 0.49
+      end
+      return job
+    end
   end
 end

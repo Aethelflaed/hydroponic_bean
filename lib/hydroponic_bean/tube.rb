@@ -34,6 +34,12 @@ module HydroponicBean
       end.count
     end
 
+    def current_waiting
+      HydroponicBean.connections.select do |c|
+        c.waiting? && c.watched_tube_names.include?(name)
+      end.count
+    end
+
     def serialize_stats
       {
         'name' => name,
@@ -44,7 +50,7 @@ module HydroponicBean
         'current-jobs-buried'   => current_jobs_buried,
         'total-jobs' => jobs.count,
         'current-using' => current_using,
-        'current-waiting' => 0,
+        'current-waiting' => current_waiting,
         'current-watching' => current_watching,
         'pause-time-left' => pause_time_left,
       }.merge(stats)

@@ -4,9 +4,13 @@ module HydroponicBean
   class Connection
     include HydroponicBean::Protocol
 
+    attr_accessor :waiting
+    alias_method :waiting?, :waiting
+
     def initialize
       @_read, @_write = IO.pipe
       @worker, @producer = false
+      @waiting = false
       HydroponicBean.add_connection(self)
     end
 

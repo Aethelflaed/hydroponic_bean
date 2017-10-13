@@ -16,29 +16,10 @@ module HydroponicBean
 
         seconds = seconds.to_i
 
-        reserver_with_retry = Proc.new do
-          while !(job = reserve_job)
-            sleep 0.49
-          end
+        if job = wait_for_job(seconds)
           output_reserved job
-        end
-
-        if seconds == 0
-          if (job = reserve_job)
-            output_reserved job
-          else
-            output_timed_out
-          end
-        elsif seconds < 0
-          reserver_with_retry.call
         else
-          begin
-            Timeout.timeout(seconds) do
-              reserver_with_retry.call
-            end
-          rescue Timeout::Error
-            output_timed_out
-          end
+          output("TIMED_OUT\r\n")
         end
       end
 
@@ -95,10 +76,6 @@ module HydroponicBean
       def output_reserved(job)
         output("RESERVED #{job.id} #{job.data.length}\r\n")
         output("#{job.data}\r\n")
-      end
-
-      def output_timed_out
-        output("TIMED_OUT\r\n")
       end
 
       def output_watching
