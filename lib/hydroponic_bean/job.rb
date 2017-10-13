@@ -5,7 +5,7 @@ module HydroponicBean
     end
 
     attr_accessor :id, :pri, :delay, :ttr, :data, :created_at,
-      :reserved_at, :state, :tube, :stats
+      :reserved_at, :reserved_by, :state, :tube, :stats
 
     def initialize(tube, pri, delay, ttr, data)
       @id = self.class.next_id
@@ -52,27 +52,49 @@ module HydroponicBean
     def delayed?;  exists? && state == State.delayed; end
     def buried?;   exists? && state == State.buried; end
 
-    def reserve
+    def reserved_by?(connection)
+      reserved? && reserved_by == connection
+    end
+
+    def reserve(connection)
       if ready?
         stats['reserves'] += 1
+        @reserved_by = connection
         @reserved_at = Time.now.utc
       end
     end
 
-    def release(pri, delay)
-      if reserved?
+    def release(connection, pri, delay)
+      if reserved_by?(connection)
         stats['releases'] += 1
         @pri = pri.to_i
         @delay = delay.to_i
         @reserved_at = nil
+        @reserved_by = nil
         @state = @delay > 0 ? State.delayed : State.ready
       end
     end
 
-    def delete
-      if @deleted == false
+    def bury(connection, pri)
+      if reserved_by?(connection)
+        stats['buries'] += 1
+        @pri = pri.to_i
+        @reserved_at = nil
+        @reserved_by = nil
+        @state = State.buried
+      end
+    end
+
+    def delete(connection)
+      if exists? && (!reserved? || reserved_by?(connection))
         @tube.job_deleted!
         @deleted = true
+      end
+    end
+
+    def touch(connection)
+      if reserved_by?(connection)
+        @reserved_at = Time.now.utc
       end
     end
 
@@ -89,6 +111,10 @@ module HydroponicBean
 
     def time_left
       reserved? ? ttr_left : [delay - age, 0].max
+    end
+
+    def deadline_soon?
+      ttr_left <= 1
     end
 
     def serialize_stats
