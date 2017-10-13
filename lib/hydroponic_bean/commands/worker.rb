@@ -6,36 +6,25 @@ module HydroponicBean
       end
 
       def reserve_with_timeout(stream, seconds)
-        seconds = seconds.to_i
-        reserver = Proc.new do
-          HydroponicBean.update_time!
-          # check for DEADLINE_SOON
-          tubes = watched_tubes
-          deadlining_job = tubes.map(&:reserved_jobs).flatten.select do |job|
-            job.reserved_by == self
-          end.sort_by(&:ttr_left).first
-          if deadlining_job&.deadline_soon?
-            output("DEADLINE_SOON\r\n")
-            return true
-          end
+        # Mark this connection as a worker
+        worker!
 
-          tubes.reject!(&:paused?)
-          jobs = tubes.map(&:ready_jobs).flatten.sort_by(&:created_at).sort_by(&:pri)
-          if (job = jobs.first)
-            job.reserve(self)
-            job
-          end
+        if deadline_soon?
+          output("DEADLINE_SOON\r\n")
+          return true
         end
 
+        seconds = seconds.to_i
+
         reserver_with_retry = Proc.new do
-          while !(job = reserver.call)
-            sleep 0.90
+          while !(job = reserve_job)
+            sleep 0.49
           end
           output_reserved job
         end
 
         if seconds == 0
-          if (job = reserver.call)
+          if (job = reserve_job)
             output_reserved job
           else
             output_timed_out

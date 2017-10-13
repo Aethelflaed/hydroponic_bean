@@ -22,7 +22,9 @@ module HydroponicBean
         end
 
         command, *args = line.split
-        if !send(command.gsub('-', '_'), *([stream] + args))
+        HydroponicBean.commands[command] += 1
+        command.tr!('-', '_')
+        if !send(command, *([stream] + args))
           return
         end
       end

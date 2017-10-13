@@ -7,6 +7,9 @@ module HydroponicBean
       end
 
       def put(stream, pri, delay, ttr, bytes)
+        # Mark this connection as a producer
+        producer!
+
         bytes = bytes.to_i
         data = stream.read(bytes)
 

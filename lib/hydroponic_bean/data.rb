@@ -37,6 +37,19 @@ module HydroponicBean
     connections.delete(connection)
   end
 
+  def self.worker_count
+    connections.select(&:worker?).count
+  end
+
+  def self.producer_count
+    connections.select(&:producer?).count
+  end
+
+  # Keep track of commands for stats
+  def self.commands
+    @commands ||= Hash.new{|h, k| h[k] = 0}
+  end
+
   module Data
     def current_tube_name
       @current_tube_name ||= 'default'
@@ -62,6 +75,22 @@ module HydroponicBean
       HydroponicBean.jobs.push(job)
 
       return job
+    end
+
+    def deadline_soon?
+      HydroponicBean.update_time!
+      watched_tubes.map(&:reserved_jobs).flatten.select do |job|
+        job.reserved_by == self
+      end.sort_by(&:ttr_left).first&.deadline_soon?
+    end
+
+    def reserve_job
+      HydroponicBean.update_time!
+      reservable_jobs.first&.reserve(self)
+    end
+
+    def reservable_jobs
+      watched_tubes.reject(&:paused?).map(&:ready_jobs).flatten.sort_by(&:created_at).sort_by(&:pri)
     end
   end
 end

@@ -6,8 +6,14 @@ module HydroponicBean
 
     def initialize
       @_read, @_write = IO.pipe
+      @worker, @producer = false
       HydroponicBean.add_connection(self)
     end
+
+    def worker?;   @worker;          end
+    def worker!;   @worker = true;   end
+    def producer?; @producer;        end
+    def producer!; @producer = true; end
 
     # Necessary interface used by beaneater
     def write(command)

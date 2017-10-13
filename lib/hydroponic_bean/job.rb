@@ -61,6 +61,8 @@ module HydroponicBean
         stats['reserves'] += 1
         @reserved_by = connection
         @reserved_at = Time.now.utc
+        # For convenience and one-liners
+        return self
       end
     end
 
