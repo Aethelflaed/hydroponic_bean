@@ -59,6 +59,7 @@ module HydroponicBean
     def reserve(connection)
       if ready?
         stats['reserves'] += 1
+        @state = State.reserved
         @reserved_by = connection
         @reserved_at = Time.now.utc
         # For convenience and one-liners

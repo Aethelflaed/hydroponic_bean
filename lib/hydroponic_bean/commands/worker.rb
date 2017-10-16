@@ -17,7 +17,8 @@ module HydroponicBean
         seconds = seconds.to_i
 
         if job = wait_for_job(seconds)
-          output_reserved job
+          output("RESERVED #{job.id} #{job.data.length}\r\n")
+          output("#{job.data}\r\n")
         else
           output("TIMED_OUT\r\n")
         end
@@ -73,11 +74,6 @@ module HydroponicBean
       end
 
       protected
-      def output_reserved(job)
-        output("RESERVED #{job.id} #{job.data.length}\r\n")
-        output("#{job.data}\r\n")
-      end
-
       def output_watching
         output("WATCHING #{watched_tube_names.count}\r\n")
       end

@@ -1,3 +1,5 @@
+require 'timeout'
+
 require 'hydroponic_bean/tube'
 require 'hydroponic_bean/job'
 
@@ -94,12 +96,16 @@ module HydroponicBean
 
     def wait_for_job(timeout)
       self.waiting = true
-      if timeout >= 0
-        Timeout.timeout(timeout) do
-          _wait_for_job
-        end
+      if timeout == 0
+        return reserve_job
       else
-        _wait_for_job
+        timeout = [0, timeout].max
+        Timeout.timeout(timeout) do
+          while !(job = reserve_job)
+            sleep 0.49
+          end
+          return job
+        end
       end
     rescue Timeout::Error
       return nil
@@ -121,14 +127,6 @@ module HydroponicBean
         'current-workers' =>       HydroponicBean.connections.select(&:workers?).count,
         'current-waiting' =>       HydroponicBean.connections.select(&:waiting?).count,
       }.merge(Hash[HydroponicBean.commands.map{|k, v| ["cmd-#{k}", v]}])
-    end
-
-    private
-    def _wait_for_job
-      while !(job = reserve_job)
-        sleep 0.49
-      end
-      return job
     end
   end
 end
