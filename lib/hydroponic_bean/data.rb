@@ -44,14 +44,6 @@ module HydroponicBean
     connections.delete(connection)
   end
 
-  def self.worker_count
-    connections.select(&:worker?).count
-  end
-
-  def self.producer_count
-    connections.select(&:producer?).count
-  end
-
   # Keep track of commands for stats
   def self.commands
     @commands ||= Hash.new{|h, k| h[k] = 0}
@@ -113,6 +105,22 @@ module HydroponicBean
       return nil
     ensure
       self.waiting = false
+    end
+
+    def stats
+      {
+        'current-jobs-urgent' =>   HydroponicBean.jobs.select(&:urgent?).count,
+        'current-jobs-ready' =>    HydroponicBean.jobs.select(&:ready?).count,
+        'current-jobs-reserved' => HydroponicBean.jobs.select(&:reserved?).count,
+        'current-jobs-delayed' =>  HydroponicBean.jobs.select(&:delayed?).count,
+        'current-jobs-buried' =>   HydroponicBean.jobs.select(&:buried?).count,
+        'total-jobs' =>            HydroponicBean.jobs.count,
+        'current-tubes' =>         HydroponicBean.tubes.count,
+        'current-connections' =>   HydroponicBean.connections.count,
+        'current-producers' =>     HydroponicBean.connections.select(&:produced?).count,
+        'current-workers' =>       HydroponicBean.connections.select(&:workers?).count,
+        'current-waiting' =>       HydroponicBean.connections.select(&:waiting?).count,
+      }.merge(Hash[HydroponicBean.commands.map{|k, v| ["cmd-#{k}", v]}])
     end
 
     private
