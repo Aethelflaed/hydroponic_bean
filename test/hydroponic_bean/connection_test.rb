@@ -21,6 +21,7 @@ class HydroponicBean::ConnectionTest < TestCase
   def test_close
     @connection.close
 
+    assert @connection.closed?
     assert @write.closed?
   end
 

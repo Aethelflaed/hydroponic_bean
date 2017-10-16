@@ -19,6 +19,10 @@ module HydroponicBean
     def producer?; @producer;        end
     def producer!; @producer = true; end
 
+    def closed?
+      @_write.closed?
+    end
+
     # Necessary interface used by beaneater
     def write(command)
       parse(StringIO.new(command))
